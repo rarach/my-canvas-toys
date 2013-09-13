@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hit testing demo</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+    canvas {
+      border: 1px solid red;
+      background-color: #FCFCFC;
+    }
+
+    </style>
+    <script type="text/javascript" src="jquery-1.7.1.min.js"> </script>
+    <script type="text/javascript" src="hit.js"> </script>
+    <script type="text/javascript" src="context2d.js"> </script>
+    
+  </head>
+  <body>
+    <div style="float: left;">
+      <canvas id="hitCanvas" width="900" height="650"></canvas>
+    </div>
+    <div id="debugArea" style="float: left; border: 1px solid green; width: 400px; height: 650px; overflow: auto;">
+    </div>
+    <a href="javascript: clearMessage();">clear</a>
+
+    <script type="text/javascript">
+      function message(text) {
+        document.getElementById('debugArea').innerHTML += text + "<br/>";
+      }
+      function clearMessage() {
+        document.getElementById('debugArea').innerHTML = "";
+      }
+
+      var ctx = document.getElementById('hitCanvas').getContext('2d');
+    </script>
+    <script type="text/javascript">
+    $('#hitCanvas').mousedown(function(event) {
+      var pos = jQuery(this).position();
+      
+      message("Hit at " + (event.pageX - pos.left) + ", " + (event.pageY - pos.top));
+      
+      hitSpot(event.pageX - pos.left, event.pageY - pos.top);
+    });
+    
+    
+    
+    diagram();
+    dashed();
+    </script>
+  </body>
+</html>

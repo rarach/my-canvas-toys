@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Unit-tests console for GUI layouts</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <!-- Components of the tested framework -->
+    <script type="text/javascript" src="../UiPoint.js"> </script>
+    <script type="text/javascript" src="../UiSize.js"> </script>
+    <script type="text/javascript" src="../Margin.js"> </script>
+    <script type="text/javascript" src="../ClippingBox.js"> </script>
+    <script type="text/javascript" src="../GridLayout.js"> </script>
+    <script type="text/javascript" src="../Rectangle.js"> </script>
+    <script type="text/javascript" src="../BorderLayout.js"> </script>
+    <script type="text/javascript" src="../FreeLayout.js"> </script>
+    <script type="text/javascript" src="../StackLayout.js"> </script>
+    <script type="text/javascript" src="UnitTesting.js"> </script>
+
+    <script type="text/javascript">
+      var _testItems = [];
+      var _counter = 0;
+
+      var _okTests = 0;
+      var _failedTests = 0;
+
+      function registerTest(canvas, image, maxDiff, renderFunc, description) {
+        _counter++;
+        _testItems.push({
+          testNumber: _counter,
+          testInit: renderFunc,
+          testCanvas: canvas,
+          testImage: image,
+          tolerance: maxDiff,
+          desc: description
+        });
+      }
+
+      function init() {
+        buildPage();
+        performTests();
+      }
+
+      function buildPage() {
+        var len = _testItems.length;
+
+        var ti;
+        for (ti = 0; ti < len; ti++) {
+          var id = "testItem" + _testItems[ti].testNumber;
+          var imgCellId = "testImg" + _testItems[ti].testNumber;
+          var canvasCellId = "testCanvas" + _testItems[ti].testNumber;
+          var resultCellId = "testResult" + _testItems[ti].testNumber;
+          var snapId = "snapshot" + _testItems[ti].testNumber;
+          var snapHtml = "<span id='"+snapId+"' class='hidden'>&nbsp;&nbsp;&nbsp;<a href='javascript: snapshot(\""+canvasCellId+"\");'>(capture)</a></span>";
+          var tableHtml = "<div id='"+id+"' class='testItemExpanded'><table class='testTable'>" +
+                          "<tr><td id='"+resultCellId+"' class='notRun' style='border-right: 0;'>Result: [test not finished]</td>" + 
+                          "<td class='expandCollapse'><a href='javascript: expandCollapse(\""+id+"\");'>expand/collapse</a></td><tr/>" +
+                          "<tr><td colspan='2'>Description: "+_testItems[ti].desc+"</td></tr>" +
+                          "<tr><td id='"+imgCellId+"'>Expected:<br/></td><td id='"+canvasCellId+"'>Actual:"+snapHtml+"</br></td></tr>" +
+                          "</table></div>";
+
+          document.getElementById("mainContent").innerHTML += tableHtml;
+          document.getElementById(imgCellId).appendChild(_testItems[ti].testImage);
+        }
+
+        updateStats();
+      }
+
+      function performTests() {
+        var testsLen = _testItems.length;
+        for (var i = 0; i < testsLen; i++) {
+          var item = _testItems[i];
+          item.testInit();
+          document.getElementById("testCanvas"+(i+1)).appendChild(item.testCanvas);   //Must be done here :( buildPage() has some context problems
+
+          var result = compareContents(item.testCanvas, item.testImage, item.tolerance);
+          var resultCell = document.getElementById("testResult" + item.testNumber);
+
+          if (result === "OK") {
+            _okTests++;
+            resultCell.className = "ok";
+            resultCell.innerHTML = "Result: OK";
+          }
+          else {
+            resultCell.className = "fail";
+            _failedTests++;
+            resultCell.innerHTML = "Test failed. Message: " + result;
+            document.getElementById("snapshot" + item.testNumber).className = "inline";
+          }
+          expandCollapse("testItem" + item.testNumber);
+          updateStats();
+        }
+      }
+
+      function updateStats() {
+        var tests = _testItems.length;
+        document.getElementById("testCount").innerHTML = tests;
+        document.getElementById("okTestCount").innerHTML = _okTests;
+        document.getElementById("failedTestCount").innerHTML = _failedTests;
+        document.getElementById("pendingTestCount").innerHTML = tests - _okTests - _failedTests;
+      }
+
+      function expandCollapse(divId) {
+        var div = document.getElementById(divId);
+        if (div.collapsed) {
+          div.className = "testItemExpanded";
+          div.collapsed = false;
+        }
+        else {
+          div.className = "testItemCollapsed";
+          div.collapsed = true;
+        }
+      }
+
+      function snapshot(cellId) {
+        var canvas = document.getElementById(cellId).getElementsByTagName("canvas")[0];
+        document.getElementById("snapImage").src = canvas.toDataURL();
+        document.getElementById("snapOverlay").className = "block";
+        var popUp = document.getElementById("snapPopUp");
+        var puWidth = popUp.offsetWidth;
+        popUp.style.marginLeft = "-" + (puWidth/2) + "px";
+      }
+
+      function closeSnapshot() {
+        document.getElementById("snapOverlay").className="hidden";
+      }
+    </script>
+
+    <style type="text/css">
+      h2 {
+        display: inline;
+        color: #5a0000;
+      }
+      img, canvas {
+        border: 1px dashed black;
+        background-color: white;
+      }
+      #mainContent { margin: 5px; display: inline-block;}
+      .testTable {
+        border-collapse: collapse;
+        border-top: 1px solid #333333;
+        border-left: 1px solid #333333;
+      }
+      .testTable td {
+        width: 50%;
+        padding: 2px;
+        border-right: 1px solid #333333;
+        border-bottom: 1px solid #333333;
+        background-color: #f0f0f0;
+      }
+      td.expandCollapse {
+        text-align: right;
+        vertical-align: top;
+      }
+      div.testItemExpanded {
+        margin-bottom: 16px;
+      }
+      div.testItemCollapsed {
+        height: 30px;
+        margin-bottom: 16px;
+        overflow-y: hidden;
+        border-bottom: 1px solid #333333;
+      }
+      .notRun { color: #705070; }
+      .ok { color: green; }
+      .fail { color: red; }
+      .blue { color: blue; }
+      .hidden { display: none; }
+      .inline { display: inline; }
+      .block { display: block; }
+      #snapOverlay {
+        position: fixed;
+        top:0; left:0; right:0; bottom:0;
+        background-color: rgba(0, 0, 0, 0.8);
+      }
+      #snapPopUp {
+        position: fixed;
+        top: 120px; left: 50%;
+        border: 2px solid #5a0000;
+        padding: 5px;
+        background-color: #f0f0f0;
+      }
+      #toolTip {
+        position: fixed;
+        border: 1px solid black;
+        padding: 2px;
+        background-color: seashell;
+      }
+      #snapImage {
+        background-color: white;
+      }
+    </style>
+  </head>
+
+  <body onload="init();">
+    <h2>Test console</h2> &nbsp; (Note: performs very bad on IE9 and fails on Chrome)
+    <br/>
+    <br/>
+    <div>Subscribed tests: <span id="testCount"></span></div>
+    <div class="ok">Succeeded: <span id="okTestCount"></span></div>
+    <div class="fail">Failed: <span id="failedTestCount"></span></div>
+    <div class="blue">Pending: <span id="pendingTestCount"></span></div>
+    <br/>
+    <div id="mainContent">
+      <!-- dynamic content -->
+    </div>
+
+    <div id='snapOverlay' class="hidden" onclick="closeSnapshot();">
+      <div id="snapPopUp" onclick="if (!e) var e = window.event; e.cancelBubble = true; if (e.stopPropagation) e.stopPropagation();">
+        <img id="snapImage" src="" alt="snapshot"/>
+        <br/>
+        If you believe this picture is how the actual<br/>
+        canvas should look like, right-click the image<br/>
+        and save it to disk overwriting the reference.
+        <br/>
+        <div style="float: right;">
+          <a href="javascript: closeSnapshot();">Close</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="toolTip" style="display: none;">
+      
+    </div>
+    
+    <!-- Register a test by adding it here and calling registerTest() inside -->
+    <script type="text/javascript" src="tests01/test1.js"> </script>
+    <script type="text/javascript" src="tests01/test2.js"> </script>
+    <script type="text/javascript" src="tests01/test3.js"> </script>
+    <script type="text/javascript" src="StackLayoutTests/test01.js"> </script>
+    <script type="text/javascript" src="StackLayoutTests/test02.js"> </script>
+    <script type="text/javascript" src="StackLayoutTests/test03.js"> </script>
+    <script type="text/javascript" src="FreeLayoutTests/test01.js"> </script>
+    <script type="text/javascript" src="BorderLayoutTests/test00.js"> </script>
+    <script type="text/javascript" src="BorderLayoutTests/test01.js"> </script>
+    <script type="text/javascript" src="BorderLayoutTests/test02.js"> </script>
+    <script type="text/javascript" src="BorderLayoutTests/test03.js"> </script>
+    <script type="text/javascript" src="BorderLayoutTests/test04.js"> </script>
+    <script type="text/javascript" src="Subpixels/test01.js"> </script>
+    <script type="text/javascript" src="Subpixels/test02.js"> </script>
+    <script type="text/javascript" src="GridLayoutTests/test01.js"> </script>
+    <script type="text/javascript" src="GridLayoutTests/test02.js"> </script>
+    <script type="text/javascript" src="GridLayoutTests/test03.js"> </script>
+    <script type="text/javascript" src="GridLayoutTests/test04.js"> </script>
+  </body>
+</html>

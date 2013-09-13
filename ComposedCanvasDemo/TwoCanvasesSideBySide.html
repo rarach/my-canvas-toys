@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Demonstration</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+      td {
+        border: 1px solid black;
+        padding: 0;
+      }
+      canvas {
+        background-color: bisque;
+        display: block;
+      }
+      #preview {
+        position: fixed;
+        width: 16px;
+        height: 16px;
+        background-color: orange;
+        cursor: pointer;
+      }
+    </style>
+    
+    <script type="text/javascript" src="two.js"> </script>
+  </head>
+  <body onload="javascript: init();">
+    <div id="holder" style="width: 900px; height: 750px; overflow: auto; border: 1px solid greenyellow; background-color: magenta;"
+         onclick="javascript: document.getElementById('messageDiv').innerHTML += 'clicked!<br/>';">
+      <table style="border: 0; border-collapse: collapse; border-spacing: 0;">
+        <tr>
+          <td>
+            <canvas id="canvas_0_0" width="500" height="500">
+              Sorry, no canvas in your browser :'(
+            </canvas>
+          </td>
+          <td>
+            <canvas id="canvas_0_1" width="500" height="500">
+              Sorry, no canvas in your browser :'(
+            </canvas>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div id="emptyPlaceHolder_1_0" style="width: 500px; height: 500px; background-color: lightgray; margin: 0;"></div>
+          </td>
+          <td>
+            <canvas id="canvas_1_1" width="500" height="500">
+              Sorry, no canvas in your browser :'(
+            </canvas>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div id="messageDiv" style="width: 600px; height: 150px; border: 1px solid red; overflow: auto;">
+    </div>
+    <a href="javascript: void(0);" onclick="javascript: scrollUp(10);">scroll up</a>&nbsp;
+    <a href="javascript: void(0);" onclick="javascript: scrollUp(-10);">scroll down</a>&nbsp;
+    <div id="preview">
+      x
+    </div>
+  </body>
+</html>

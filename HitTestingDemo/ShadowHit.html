@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hit testing demo: hit in "shadow" canvas</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+    canvas {
+      border: 1px solid red;
+      background-color: lightyellow;
+    }
+    #hitCanvas {
+      background-color: #e5ffff;
+    }
+
+    </style>
+    <script type="text/javascript" src="jquery-1.7.1.min.js"> </script>
+    <script type="text/javascript" src="hit2.js"> </script>
+    
+  </head>
+  <body>
+    <div>
+      <div style="float: left;">
+        <canvas id="sceneCanvas" width="1200" height="900" style="display: block;"></canvas>
+        <canvas id="hitCanvas" width="1200" height="900" style="display: none;"></canvas>
+      </div>
+      <div id="debugArea" style="float: left; border: 1px solid green; width: 250px; height: 900px; overflow: auto;">
+      </div>
+      <a href="javascript: clearMessage();">clear</a>
+    </div>
+    <br/>
+    <a href="javascript: showNormal();">Show normal</a>
+    <a href="javascript: showShadow();">Show shadow</a>
+
+    <script type="text/javascript">
+      function showNormal() {
+        document.getElementById('sceneCanvas').style.display='block';
+        document.getElementById('hitCanvas').style.display='none';
+      }
+      function showShadow() {
+        document.getElementById('sceneCanvas').style.display='none';
+        document.getElementById('hitCanvas').style.display='block';
+      }
+      function message(text) {
+        document.getElementById('debugArea').innerHTML += text + "<br/>";
+      }
+      function clearMessage() {
+        document.getElementById('debugArea').innerHTML = "";
+      }
+    </script>
+    <script type="text/javascript">
+    $('#sceneCanvas').mousedown(function(event) {
+      var pos = jQuery(this).position();
+//      message("Hit at " + (event.pageX - pos.left) + ", " + (event.pageY - pos.top));
+      hitSpot(event.pageX - pos.left, event.pageY - pos.top);
+    });
+
+    init();
+    </script>
+  </body>
+</html>

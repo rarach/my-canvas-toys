@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GUI layouting system</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript" src="UiPoint.js"> </script>
+    <script type="text/javascript" src="UiSize.js"> </script>
+    <script type="text/javascript" src="Margin.js"> </script>
+    <script type="text/javascript" src="ClippingBox.js"> </script>
+    <script type="text/javascript" src="Rectangle.js"> </script>
+    <script type="text/javascript" src="GridLayout.js"> </script>
+    <script type="text/javascript" src="BorderLayout.js"> </script>
+    <script type="text/javascript" src="FreeLayout.js"> </script>
+    <script type="text/javascript" src="StackLayout.js"> </script>
+  </head>
+  <body>
+    <div>
+      <canvas id="testCanvas" width="1200" height="600" style="border: 1px solid darkkhaki; background-color: lightyellow">
+        No canvas here. Sorry.
+      </canvas>
+    </div>
+    <script type="text/javascript" src="main.js"> </script>
+    <script type="text/javascript">
+      function capture() {
+        var canvas = document.getElementById("testCanvas");
+        var image = document.getElementById("snapshot");
+        image.src = canvas.toDataURL();
+      }
+    </script>
+  </body>
+</html>

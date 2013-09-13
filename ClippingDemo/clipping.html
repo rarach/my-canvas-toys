@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    <div>
+      <canvas id="clipDemoCanvas" width="900" height="750" style="border: 1px solid darkgray; background-color: snow;">
+        Sorry, no canvas in your browser :(
+      </canvas>
+    </div>
+    <script type="text/javascript">
+      var canvas = document.getElementById("clipDemoCanvas");
+      var context = canvas.getContext("2d");
+
+      //Draw helper grid to better view the positioning
+      context.strokeStyle = "darkgray";
+      context.lineWidth = 1.0;
+      var canvasWidth = context.canvas.width;
+      var canvasHeight = context.canvas.height;
+      for (var w=0.5; w < canvasWidth; w+=2) {
+        if ((w-0.5) % 10 == 0)
+          context.strokeStyle="black";
+        context.beginPath();
+        context.moveTo(w, 0);
+        context.lineTo(w, canvasHeight);
+        context.stroke();
+        if ((w-0.5) % 10 == 0)
+          context.strokeStyle="darkgray";
+      }
+
+      context.save();
+
+      context.lineWidth = 1.0;
+      context.strokeStyle = "Magenta";
+      context.beginPath();
+      context.rect(10.5, 10.5, 40+1.0, 25+1.0);
+      context.stroke();
+      context.clip();
+
+      context.save();
+      context.strokeStyle = "Navy";
+      context.fillStyle = "Red";
+      context.lineWidth = 3.0;
+      context.beginPath();
+      context.arc(20, 30, 10, 0, Math.PI*2, false);
+      context.stroke();
+      context.fill();
+      
+      context.fillStyle = "Green";
+      context.beginPath();
+      context.arc(50, 30, 10, 0, Math.PI*2, false);
+      context.stroke();
+      context.fill();
+      context.restore();
+
+      context.restore();    //restore after clipping
+    </script>
+  </body>
+</html>

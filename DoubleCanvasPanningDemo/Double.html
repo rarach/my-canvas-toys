@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Panning with background full content canvas and visible viewport canvas</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <script type="text/javascript" src="./code.js"></script>
+  </head>
+  <body onload="javascript: initScene();">
+    <div>
+      <canvas id="viewPort" width="1600" height="900" style="border: 1px solid green;">
+        No canvas in your browser :'(
+      </canvas>
+    </div>
+    <a href="javascript: void(0);" onclick="javascript: panX(-100);">pan left (100px)</a>&nbsp;&nbsp;
+    <a href="javascript: void(0);" onclick="javascript: panX(100);">pan right (100px)</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="javascript: void(0);" onclick="javascript: panY(-100);">pan up (100px)</a>
+    <a href="javascript: void(0);" onclick="javascript: panY(100);">pan down (100px)</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span id="messageSpan" style="border: 1px solid darggray;"></span>
+  </body>
+</html>

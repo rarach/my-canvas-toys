@@ -1,0 +1,43 @@
+TODOs:
+- Adjust the ForceDirected layout so there is possibility to turn on/off minimum edge length (depending on whether
+  edge labels were shown/hidden by the user).
+- some behavior from SilverCharts should be adopted. Ex. when layout is running, some features should be locked (ex.
+  node/edge picking, tool-tips, scaling...)
+- Get rid of jQuery.
+- Profile under Opera, try to find the performance bottle-neck
+- Must implement own scroll bars :( Resizing canvas is a no-op since it would drop performance heavily. Maybe 1px
+  wide DIV with dynamically changing length (according to global bounding rectangle of the graph). And something
+  would listen to its scrolls and pan the Diagram by that.
+- Final nodes must be really small (edges short) and pre-rendered as much as possible. For performance reasons.
+- When node is moved by the user, a check must be done: if it's moved from current bounding frame rim
+                                                        or it's placed behind the frame, the frame must be
+  recomputed and canvas panned.
+- Strictly divide Rogalo and Rogalo UI. Rogalo should only provide hard-core graphing (nodes + edges only as data
+  containers, pixel-agnostic layout...). Rogalo UI works easily with the former, uses grabbing, panning, zooming,
+  tool-tips...
+
+
+NOTE:
+- DON NOT TEST ON OPERA! There is something terribly wrong with their implementation of HTML5 canvas! Has poor
+  performance not only with my code but also with proven online demos (like here, with canvas resized
+  to 1000x900: http://www.html5canvastutorials.com/labs/html5-canvas-interactive-scatter-plot-with-20000-nodes-using-kineticjs/)
+
+BUGs:
+- ForceDirected layout is unsatisfactory for small "sunny" graphs (i.e. <10 nodes)
+- ForceDirected layout produces very bad results for sparse clustered trees (U know what I mean)
+
+
+IDEAs:
+- I need some more fancy layouts. Consider SpringLayout from JUNG, FADE2D for bigger graphs (cca >500 nodes)
+  as implementation of force-directed layout. Tree, LayeredCircular, SineWave...
+- Consider full migration to Google's Dart
+
+
+--------------------------------------------------------------------------------------------------------------------
+see:
+- monotonic convergence (wiki: ...algorithm will at each iteration decrease the stress or cost of the layout, is
+  important because it guarantees that the layout will eventually reach a local minimum and stop...)
+
+- Kamada-Kawai algorithm:
+  http://www.cse.ohio-state.edu/~chaudhua/Temporary/wi11_888/Papers/Kamada_GraphDrawing_Letters89.pdf
+

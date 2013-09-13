@@ -1,0 +1,113 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Demo based on html5canvastutorials.com</title>
+    
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+      canvas {
+        border: 1px solid #9C9898;
+      }
+    </style>
+    <script type="text/javascript" src="./kinetic-v4.0.1.js"></script>
+    <script>
+      function addNode(dat, layer, topLayer, tooltip, tooltipLayer) {
+        var node = new Kinetic.Circle({
+          x: dat.x,
+          y: dat.y,
+          radius: 4,
+          fill: dat.color
+        });
+
+        // move node to top layer for fast drag and drop
+        node.on('mousedown', function() {
+          node.moveTo(topLayer);
+          node.setDraggable(true);
+          layer.draw();
+        });
+        // return node to original layer
+        node.on('dragend', function() {
+          node.moveTo(layer);
+          node.setDraggable(false);
+        });
+
+        node.on('mouseover mousemove dragmove', function() {
+          // update tooltip
+          var mousePos = node.getStage().getMousePosition();
+          tooltip.setPosition(mousePos.x + 5, mousePos.y + 5);
+          tooltip.setText("node: " + dat.id + ", color: " + dat.color);
+          tooltip.show();
+          tooltipLayer.draw();
+        });
+
+        node.on('mouseout', function() {
+          tooltip.hide();
+          tooltipLayer.draw();
+        });
+
+        layer.add(node);
+      }
+
+      window.onload = function() {
+
+        var stage = new Kinetic.Stage({
+          container: 'container',
+          width: 1500,
+          height: 900
+        });
+
+        var topLayer = new Kinetic.Layer();
+        var tooltipLayer = new Kinetic.Layer();
+        var tooltip = new Kinetic.Text({
+          text: '',
+          fontFamily: 'Calibri',
+          fontSize: 12,
+          padding: 5,
+          fill: 'black',
+          opacity: 0.75,
+          textFill: 'white',
+          visible: false
+        });
+        tooltipLayer.add(tooltip);
+        // build data
+        var data = [];
+        var width = stage.getWidth();
+        var height = stage.getHeight();
+        var colors = ['red', 'orange', 'cyan', 'green', 'blue', 'purple'];
+        for(var n = 0; n < 20000; n++) {
+          var x = Math.random() * width;
+          var y = height + (Math.random() * 200) - 100 + (height / width) * -1 * x;
+          data.push({
+            x: x,
+            y: y,
+            id: n,
+            color: colors[Math.round(Math.random() * 5)]
+          });
+        }
+        // render data
+        var nodeCount = 0;
+        var layer = new Kinetic.Layer();
+        for(var n = 0; n < data.length; n++) {
+          addNode(data[n], layer, topLayer, tooltip, tooltipLayer);
+          nodeCount++;
+          if(nodeCount >= 1000) {
+            nodeCount = 0;
+            stage.add(layer);             //EDU: what's this? Additional canvas? Or?
+            layer = new Kinetic.Layer();
+          }
+        }
+        stage.add(layer);
+        stage.add(topLayer);
+        stage.add(tooltipLayer);
+      };
+
+    </script>
+  </head>
+  <body>
+    Taken from <a href="http://www.html5canvastutorials.com/kineticjs/html5-canvas-kineticjs-rect-tutorial/">http://www.html5canvastutorials.com/kineticjs/html5-canvas-kineticjs-rect-tutorial/</a>
+    <div id="container"></div>
+  </body>
+</html>

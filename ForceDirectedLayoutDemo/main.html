@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>MyDiagram graph (derived from springy.js)</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <style>
+    canvas {
+/*DEBUG. This shifts canvas coord 1px      border: 1px solid #AAA;*/
+      background-color: #F6F6F6;
+    }
+    </style>
+
+  </head>
+  <body>
+    <div style="float: left;">
+      <canvas id="diaCanvas" width="1300" height="850"></canvas>
+      <br/>
+      <a href="javascript: void null;" onclick="javascript: diagram.zoomToFit();">Scale to fit</a>&nbsp;
+      <a href="javascript: void null;" onclick="javascript: diagram.zoomIn();">zoom in</a>&nbsp;
+      <a href="javascript: void null;" onclick="javascript: diagram.zoomOut();">zoom out</a>&nbsp;&nbsp;
+      DEBUG so far: <a href="javascript: void null;" onclick="javascript: diagram.panX(200);">pan right (x+200)</a>&nbsp;
+      <a href="javascript: void null;" onclick="javascript: diagram.panY(200);">pan down (y+200)</a>&nbsp;&nbsp;
+      <a href="javascript: void null;" onclick="javascript: diagram.panX(-200);">pan left (x-200)</a>&nbsp;&nbsp;
+      <a href="javascript: void null;" onclick="javascript: diagram.panY(-200);">pan up (y-200)</a>&nbsp;&nbsp;
+      <a href="javascript: void null;" onclick="javascript: showHideHitCanvas();">hit-canvas</a>
+    </div>
+    <div id="debugArea" style="float: left; border: 1px solid green; width: 320px; height: 800px; overflow: auto;">
+    </div>
+    &nbsp;<a href="javascript: void null;" onclick="javascript: clearMessage();">clear</a>
+
+    <script type="text/javascript">
+      function message(text) {
+        document.getElementById('debugArea').innerHTML += text + "<br/>";
+      }
+      function clearMessage(){
+        document.getElementById('debugArea').innerHTML='';
+      }
+    </script>
+    <script type="text/javascript" src="script/UIPoint.js"> </script>
+    <script type="text/javascript" src="script/Layout/ForceDirected.js"> </script>
+    <script type="text/javascript" src="script/Layout/WeightedRadial.js"> </script>
+    <script type="text/javascript" src="script/Node.js"> </script>
+    <script type="text/javascript" src="script/Diagram.js"> </script>
+    <script type="text/javascript" src="script/Graph.js"> </script>
+    <script type="text/javascript" src="script/Vector.js"> </script>
+    <script type="text/javascript" src="script/GraphicsHelper.js"> </script>
+    <script type="text/javascript" src="script/Edge.js"> </script>
+    <script type="text/javascript" src="script/Controls/primitives.js"> </script>
+    <script type="text/javascript" src="script/Controls/Polyline.js"> </script>
+    <script type="text/javascript" src="script/HitService.js"> </script>
+    <script type="text/javascript" src="script/TooltipService.js"> </script>
+    
+    <script type="text/javascript" src="script/DEBUG.js"> </script>
+
+    <script>
+
+    var diaCanvas = document.getElementById('diaCanvas');
+    var bBox = diaCanvas.getBoundingClientRect();
+
+    HitService.initialize(document.getElementById('diaCanvas'));
+    TooltipService.initialize(HitService.getInstance(), bBox.left, bBox.top);
+
+    var diagram = new Diagram(/*"diaCanvas", */12345, 1, null);
+    diagram.show();
+
+    //TODO: make the diagram only owner (accessor) of canvas
+    diaCanvas.addEventListener('mousedown', function(event) {
+      var coords = toCanvasPosition(diaCanvas, event.pageX, event.pageY);
+      diagram.mouseDown(coords.x, coords.y);
+    });
+
+    diaCanvas.addEventListener('mousemove', function(e) {
+      var coords = toCanvasPosition(diaCanvas, e.pageX, e.pageY)
+
+      diagram.mouseMove(coords.x, coords.y);
+
+      //TODO: move the logic into diagram, only pass the position [like diagram.mouseMove(coords.x, coords.y)]. 
+      if (diagram.draggedControl !== null) {
+        var xx = coords.x / diagram.getScale();//-layoutPadding;
+        var yy = coords.y / diagram.getScale();//-layoutPadding;
+
+        diagram.draggedControl.setPosition(new UIPoint(xx / diagram.draggedControl.getScale(),  //TODO: like ((VisualElement).dragged).move(p.x, p.y)? Maybe.
+                                           yy / diagram.draggedControl.getScale()));
+
+        diagram.render();     //TODO: rather something like diagram.invalidate() [requestAnimationFrame]
+      }
+    });
+
+    window.addEventListener('mouseup', function() {
+      diagram.draggedControl = null;
+      diagram.mouseUp();
+    });
+
+    function toCanvasPosition(canvas, globalX, globalY) {
+      var rect = canvas.getBoundingClientRect();
+
+      var _x = (globalX - rect.left) * (canvas.width / rect.width);
+      var _y = (globalY - rect.top) * (canvas.height / rect.height);
+
+      return { x: _x, y: _y };
+    }
+
+    var hitCanvasShown = false;
+    function showHideHitCanvas() {
+      if (hitCanvasShown === true) {
+        hitCanvasShown = false;
+        HitService.getInstance().hide();
+      }
+      else {
+        hitCanvasShown = true;
+        HitService.getInstance().show();
+      }
+    }
+    </script>
+</body>
+</html>
